@@ -61,8 +61,9 @@ export function resolveRequest(
 
   const sections: PromptSections = {
     subjectCount: generateSubjectCount({ femaleCount: 1, maleCount: request.maleCount }),
+    triggerWords: loraStack.flatMap((lora) => structuredClone(lora.trigger)),
     female: {
-      identity: [...structuredClone(character.characterLora.trigger), ...structuredClone(costume.costumeLora?.trigger ?? []), ...structuredClone(character.female.identity)],
+      identity: structuredClone(character.female.identity),
       appearance: applyOverride(structuredClone(character.female.appearance), ov.femaleAppearance),
       costume: structuredClone(costume.costume),
       additional: applyOverride([], ov.femaleAdditional),
@@ -77,7 +78,7 @@ export function resolveRequest(
     },
     camera: applyOverride(structuredClone(pose.camera), ov.camera),
     background: applyOverride([], ov.background),
-    style: applyOverride([...structuredClone(style?.styleLora?.trigger ?? []), ...structuredClone(style?.style ?? [])], ov.style),
+    style: applyOverride(structuredClone(style?.style ?? []), ov.style),
     quality: applyOverride(structuredClone(defaults.quality), ov.quality),
     additionalPositive: applyOverride([], ov.additionalPositive),
   };

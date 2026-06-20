@@ -1,6 +1,6 @@
 import type { PromptSections, WaiPromptSections } from "../types/prompt.types.ts";
 
-export const WAI_PROMPT_SECTION_ORDER = ["master", "female", "male", "interactionPose", "background"] as const;
+export const WAI_PROMPT_SECTION_ORDER = ["master", "triggerWords", "female", "male", "interactionPose", "background"] as const;
 
 function normalizeTerms(terms: string[]): string[] {
   return [...new Set(terms.map((term) => term.trim()).filter(Boolean))];
@@ -28,6 +28,7 @@ export function joinWaiPromptSections(sections: WaiPromptSections): string {
 export function groupWaiPromptSections(sections: PromptSections): WaiPromptSections {
   return normalizeWaiPromptSections({
     master: [...sections.quality, ...sections.style, ...sections.additionalPositive],
+    triggerWords: sections.triggerWords,
     female: [
       ...sections.subjectCount,
       ...sections.female.identity,
@@ -37,7 +38,6 @@ export function groupWaiPromptSections(sections: PromptSections): WaiPromptSecti
     ],
     male: sections.males.flatMap((male) => [male.appearance, male.clothing, male.position, male.additional]).flat(),
     interactionPose: [
-      ...sections.poseTrigger,
       ...sections.interaction.femaleToMales,
       ...sections.interaction.malesToFemale,
       ...sections.interaction.mainPose,

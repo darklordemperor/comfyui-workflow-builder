@@ -23,11 +23,11 @@ beforeEach(() => {
   })));
 });
 
-test("edits five responsive WAI prompt sections and sends them to generation", async () => {
+test("edits six responsive WAI prompt sections and sends them to generation", async () => {
   const user = userEvent.setup();
   render(<App />);
   expect(await screen.findByLabelText("Master / Quality")).toBeInTheDocument();
-  for (const label of ["Female Character", "Male Character", "Interaction / Pose", "Background / Environment"]) {
+  for (const label of ["Trigger Words", "Female Character", "Male Character", "Interaction / Pose", "Background / Environment"]) {
     expect(screen.getByLabelText(label)).toBeInTheDocument();
   }
   const female = screen.getByLabelText("Female Character");

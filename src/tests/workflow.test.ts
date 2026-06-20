@@ -81,16 +81,17 @@ describe("ComfyUI workflow", () => {
     expect(built.workflow.prompt[built.nodeMap.negative_clip!]?.inputs.text).toBe(prompts.negative);
   });
 
-  it("builds the positive prompt from five KJNodes sections", () => {
+  it("builds the positive prompt from six KJNodes sections", () => {
     const built = build();
-    expect(nodesByType(built, "StringConstantMultiline")).toHaveLength(5);
+    expect(nodesByType(built, "StringConstantMultiline")).toHaveLength(6);
     expect(nodesByType(built, "JoinStringMulti")).toHaveLength(1);
     const join = built.workflow.prompt[built.nodeMap.prompt_join!];
-    expect(join?.inputs.inputcount).toBe(5);
+    expect(join?.inputs.inputcount).toBe(6);
     expect(join?.inputs.delimiter).toBe(", ");
     expect(join?.inputs.return_list).toBe(false);
     expect(join?.inputs.string_1).toEqual([built.nodeMap.prompt_master, 0]);
-    expect(join?.inputs.string_5).toEqual([built.nodeMap.prompt_background, 0]);
+    expect(join?.inputs.string_2).toEqual([built.nodeMap.prompt_trigger_words, 0]);
+    expect(join?.inputs.string_6).toEqual([built.nodeMap.prompt_background, 0]);
     expect(built.workflow.prompt[built.nodeMap.positive_clip!]?.inputs.text).toEqual([built.nodeMap.prompt_join, 0]);
   });
 
@@ -99,10 +100,11 @@ describe("ComfyUI workflow", () => {
     const sectionNodes = canvas.nodes.filter((node) => node.type === "StringConstantMultiline");
     expect(sectionNodes.map((node) => node.title)).toEqual([
       "1 · Master / Quality",
-      "2 · Female Character",
-      "3 · Male Character",
-      "4 · Interaction / Pose",
-      "5 · Background / Environment",
+      "2 · Trigger Words",
+      "3 · Female Character",
+      "4 · Male Character",
+      "5 · Interaction / Pose",
+      "6 · Background / Environment",
     ]);
     expect(canvas.nodes.find((node) => node.type === "JoinStringMulti")?.title).toBe("Join WAI Prompt");
   });

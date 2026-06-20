@@ -171,8 +171,9 @@ function nodePosition(logicalName: string, fallbackIndex: number, downstreamX: n
   if (logicalName === "checkpoint") return [80, 420];
   if (logicalName.startsWith("lora_")) return [430 + Number(logicalName.slice(5)) * 350, 420];
   const promptPositions: Record<string, [number, number]> = {
-    prompt_master: [downstreamX, 20], prompt_female: [downstreamX, 220], prompt_male: [downstreamX, 420],
-    prompt_interaction_pose: [downstreamX, 620], prompt_background: [downstreamX, 820], prompt_join: [downstreamX + 450, 370],
+    prompt_master: [downstreamX, 20], prompt_trigger_words: [downstreamX, 220], prompt_female: [downstreamX, 420],
+    prompt_male: [downstreamX, 620], prompt_interaction_pose: [downstreamX, 820],
+    prompt_background: [downstreamX, 1020], prompt_join: [downstreamX + 450, 470],
   };
   if (promptPositions[logicalName]) return promptPositions[logicalName];
   const pipelineX = downstreamX + 850;
@@ -210,8 +211,9 @@ export function buildComfyUICanvasWorkflow(built: BuiltWorkflow): ComfyUICanvasW
     }));
     const logicalName = logicalById[id] ?? id;
     const titles: Record<string, string> = {
-      prompt_master: "1 · Master / Quality", prompt_female: "2 · Female Character", prompt_male: "3 · Male Character",
-      prompt_interaction_pose: "4 · Interaction / Pose", prompt_background: "5 · Background / Environment", prompt_join: "Join WAI Prompt",
+      prompt_master: "1 · Master / Quality", prompt_trigger_words: "2 · Trigger Words", prompt_female: "3 · Female Character",
+      prompt_male: "4 · Male Character", prompt_interaction_pose: "5 · Interaction / Pose",
+      prompt_background: "6 · Background / Environment", prompt_join: "Join WAI Prompt",
       preprocessor_preview: "ControlNet Input Preview", output_preview: "Final Generated Preview",
     };
     return {

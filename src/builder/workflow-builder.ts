@@ -64,6 +64,7 @@ export function buildComfyWorkflow({
   });
   const promptSections = [
     ["prompt_master", waiSections.master],
+    ["prompt_trigger_words", waiSections.triggerWords],
     ["prompt_female", waiSections.female],
     ["prompt_male", waiSections.male],
     ["prompt_interaction_pose", waiSections.interactionPose],
@@ -73,14 +74,15 @@ export function buildComfyWorkflow({
     nodes.add(name, "StringConstantMultiline", { string: joinPromptSections([terms]), strip_newlines: true });
   }
   nodes.add("prompt_join", "JoinStringMulti", {
-    inputcount: 5,
+    inputcount: 6,
     string_1: nodes.ref("prompt_master"),
     delimiter: ", ",
     return_list: false,
-    string_2: nodes.ref("prompt_female"),
-    string_3: nodes.ref("prompt_male"),
-    string_4: nodes.ref("prompt_interaction_pose"),
-    string_5: nodes.ref("prompt_background"),
+    string_2: nodes.ref("prompt_trigger_words"),
+    string_3: nodes.ref("prompt_female"),
+    string_4: nodes.ref("prompt_male"),
+    string_5: nodes.ref("prompt_interaction_pose"),
+    string_6: nodes.ref("prompt_background"),
   });
   nodes.add("positive_clip", "CLIPTextEncode", { text: nodes.ref("prompt_join"), clip: clipRef });
   nodes.add("negative_clip", "CLIPTextEncode", { text: builtPrompts.negative, clip: clipRef });

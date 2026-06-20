@@ -9,6 +9,7 @@ type SectionKey = keyof WaiPromptSections;
 type SectionText = Record<SectionKey, string>;
 const SECTION_EDITORS: Array<{ key: SectionKey; label: string; hint: string }> = [
   { key: "master", label: "Master / Quality", hint: "Quality, aesthetic, medium, artist and style tags" },
+  { key: "triggerWords", label: "Trigger Words", hint: "Active character, costume, style and pose LoRA triggers" },
   { key: "female", label: "Female Character", hint: "Subject count, identity, appearance and clothing" },
   { key: "male", label: "Male Character", hint: "Identity, appearance, clothing and position" },
   { key: "interactionPose", label: "Interaction / Pose", hint: "Actions, contact, pose, framing and camera" },
@@ -43,7 +44,7 @@ export function GeneratePage({ data }: { data: BootstrapPayload }) {
       if (name === "generate") { const url = URL.createObjectURL(new Blob([JSON.stringify(result.canvas, null, 2)], { type: "application/json" })); const link = document.createElement("a"); link.href = url; link.download = data.settings.workflowFileName; link.click(); URL.revokeObjectURL(url); }
     } catch (error) { setMessage(error instanceof Error ? error.message : "Action failed"); }
   };
-  return <main className="workspace generate"><header><h1>Generate</h1><p>Build five WAI-Illustrious prompt sections and send the joined workflow to ComfyUI.</p></header><div className="generate-grid">
+  return <main className="workspace generate"><header><h1>Generate</h1><p>Build six WAI-Illustrious prompt sections and send the joined workflow to ComfyUI.</p></header><div className="generate-grid">
     <section className="panel"><h2>Selections</h2>
       <label className="field"><span>Character</span><select value={characterId} onChange={(event) => { setCharacter(event.target.value); setCostume(Object.keys(data.presets.characters.records[event.target.value]?.costumes ?? {})[0] ?? ""); }}>{characters.map((item) => <option key={item.id}>{item.id}</option>)}</select></label>
       <label className="field"><span>Costume</span><select value={costumeId} onChange={(event) => setCostume(event.target.value)}>{Object.keys(character?.costumes ?? {}).map((id) => <option key={id}>{id}</option>)}</select></label>

@@ -1,5 +1,6 @@
 export interface PromptSections {
   subjectCount: string[];
+  triggerWords: string[];
   female: {
     identity: string[];
     appearance: string[];
@@ -23,6 +24,7 @@ export interface PromptSections {
 
 export interface WaiPromptSections {
   master: string[];
+  triggerWords: string[];
   female: string[];
   male: string[];
   interactionPose: string[];

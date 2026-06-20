@@ -79,7 +79,7 @@ describe("request resolution and prompt assembly", () => {
       additionalPositive: { append: ["last"] },
     } }), makeRegistry());
     const prompt = buildPrompts(resolved).positive;
-    const terms = ["masterpiece", "anime_trigger", "last", "1woman", "claire_trigger", "silver hair", "white dress", "female extra", "bald man", "couple_pose", "woman holding", "male-1 facing", "standing together", "close composition", "medium shot", "studio"];
+    const terms = ["masterpiece", "anime illustration", "last", "claire_trigger", "formal_trigger", "anime_trigger", "couple_pose", "1woman", "silver hair", "white dress", "female extra", "bald man", "woman holding", "male-1 facing", "standing together", "close composition", "medium shot", "studio"];
     let cursor = -1;
     for (const term of terms) {
       const next = prompt.indexOf(term);
@@ -88,19 +88,23 @@ describe("request resolution and prompt assembly", () => {
     }
   });
 
-  it("exposes exactly five WAI prompt sections", () => {
+  it("exposes exactly six WAI prompt sections with LoRA triggers isolated", () => {
     const preview = previewPromptSections(makeRequest(), makeRegistry());
-    expect(Object.keys(preview.waiSections)).toEqual(["master", "female", "male", "interactionPose", "background"]);
+    expect(Object.keys(preview.waiSections)).toEqual(["master", "triggerWords", "female", "male", "interactionPose", "background"]);
     for (const term of ["masterpiece", "anime illustration"]) expect(preview.waiSections.master).toContain(term);
-    for (const term of ["1woman", "claire_trigger", "silver hair"]) expect(preview.waiSections.female).toContain(term);
+    expect(preview.waiSections.triggerWords).toEqual(["claire_trigger", "formal_trigger", "anime_trigger", "couple_pose"]);
+    for (const term of ["1woman", "silver hair"]) expect(preview.waiSections.female).toContain(term);
+    expect(preview.waiSections.female).not.toContain("claire_trigger");
     for (const term of ["bald man", "plain black formal clothing"]) expect(preview.waiSections.male).toContain(term);
-    for (const term of ["couple_pose", "standing together", "medium shot"]) expect(preview.waiSections.interactionPose).toContain(term);
+    for (const term of ["standing together", "medium shot"]) expect(preview.waiSections.interactionPose).toContain(term);
+    expect(preview.waiSections.interactionPose).not.toContain("couple_pose");
     expect(preview.positivePrompt).toBe(joinWaiPromptSections(preview.waiSections));
   });
 
   it("normalizes WAI section overrides and deduplicates across sections", () => {
     const waiPromptSections = {
       master: ["masterpiece", ""],
+      triggerWords: ["character_trigger"],
       female: ["1woman"],
       male: ["1man"],
       interactionPose: ["holding hands"],
@@ -108,7 +112,7 @@ describe("request resolution and prompt assembly", () => {
     };
     const resolved = resolveRequest(makeRequest({ waiPromptSections }), makeRegistry());
     expect(resolved.waiSections).toEqual({ ...waiPromptSections, master: ["masterpiece"], background: ["lobby", "masterpiece"] });
-    expect(buildPrompts(resolved).positive).toBe("masterpiece, 1woman, 1man, holding hands, lobby");
+    expect(buildPrompts(resolved).positive).toBe("masterpiece, character_trigger, 1woman, 1man, holding hands, lobby");
   });
 
   it("throws descriptive errors before section construction", () => {
@@ -125,7 +129,7 @@ describe("request resolution and prompt assembly", () => {
 
   it("previews every positive and negative section", () => {
     const preview = previewPromptSections(makeRequest(), makeRegistry());
-    expect(preview.positiveSectionBreakdown.map((section) => section.sectionName)).toEqual(["master", "female", "male", "interactionPose", "background"]);
+    expect(preview.positiveSectionBreakdown.map((section) => section.sectionName)).toEqual(["master", "triggerWords", "female", "male", "interactionPose", "background"]);
     expect(preview.negativeSectionBreakdown.map((section) => section.sectionName)).toEqual([
       "quality", "anatomy", "subjectCount", "identityLeakage", "maleSpecific", "interaction", "posePreset", "additionalNegative",
     ]);

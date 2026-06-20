@@ -73,42 +73,49 @@
     "6": {
       "class_type": "StringConstantMultiline",
       "inputs": {
-        "string": "masterpiece, best quality, very aesthetic, absurdres, polished_anime_style, anime illustration, precise linework, balanced color palette, distinct facial identities",
+        "string": "masterpiece, best quality, very aesthetic, absurdres, anime illustration, precise linework, balanced color palette, distinct facial identities",
         "strip_newlines": true
       }
     },
     "7": {
       "class_type": "StringConstantMultiline",
       "inputs": {
-        "string": "1woman, 1man, 2people, swan_claire, claire_evening_costume, Swan Claire, adult woman, long silver hair, red eyes, refined features, elegant black evening dress, silver jewelry, formal shoes",
+        "string": "swan_claire, claire_evening_costume, polished_anime_style, formal_couple_pose",
         "strip_newlines": true
       }
     },
     "8": {
       "class_type": "StringConstantMultiline",
       "inputs": {
-        "string": "bald man, generic male appearance, plain black formal clothing, left of woman",
+        "string": "1woman, 1man, 2people, Swan Claire, adult woman, long silver hair, red eyes, refined features, elegant black evening dress, silver jewelry, formal shoes",
         "strip_newlines": true
       }
     },
     "9": {
       "class_type": "StringConstantMultiline",
       "inputs": {
-        "string": "formal_couple_pose, woman holding male-1 hand, male-1 gently facing woman, adult couple standing together, woman on left, male-1 on right, clear separation between bodies, medium full shot, eye-level camera",
+        "string": "bald man, generic male appearance, plain black formal clothing, left of woman",
         "strip_newlines": true
       }
     },
     "10": {
       "class_type": "StringConstantMultiline",
       "inputs": {
-        "string": "grand hotel lobby, soft evening lighting",
+        "string": "woman holding male-1 hand, male-1 gently facing woman, adult couple standing together, woman on left, male-1 on right, clear separation between bodies, medium full shot, eye-level camera",
         "strip_newlines": true
       }
     },
     "11": {
+      "class_type": "StringConstantMultiline",
+      "inputs": {
+        "string": "grand hotel lobby, soft evening lighting",
+        "strip_newlines": true
+      }
+    },
+    "12": {
       "class_type": "JoinStringMulti",
       "inputs": {
-        "inputcount": 5,
+        "inputcount": 6,
         "string_1": [
           "6",
           0
@@ -130,14 +137,18 @@
         "string_5": [
           "10",
           0
+        ],
+        "string_6": [
+          "11",
+          0
         ]
       }
     },
-    "12": {
+    "13": {
       "class_type": "CLIPTextEncode",
       "inputs": {
         "text": [
-          "11",
+          "12",
           0
         ],
         "clip": [
@@ -146,7 +157,7 @@
         ]
       }
     },
-    "13": {
+    "14": {
       "class_type": "CLIPTextEncode",
       "inputs": {
         "text": "worst quality, low quality, low resolution, blurry, bad anatomy, bad hands, extra arms, extra legs, extra fingers, fused fingers, missing fingers, disconnected limbs, merged bodies, extra person, duplicate person, incorrect number of people, male character with silver hair, male character with red eyes, male character wearing the woman's costume, female character bald, swapped faces, swapped clothing, identical characters, twins, detailed male face, female body on male character, feminine male body, hands not touching, incorrect hand contact, wrong arm ownership, crossed limbs, merged hands, incorrect hand placement, characters facing away from each other",
@@ -156,7 +167,7 @@
         ]
       }
     },
-    "14": {
+    "15": {
       "class_type": "EmptyLatentImage",
       "inputs": {
         "width": 1024,
@@ -164,56 +175,56 @@
         "batch_size": 1
       }
     },
-    "15": {
+    "16": {
       "class_type": "LoadImage",
       "inputs": {
         "image": "openpose_T-pose.png",
         "upload": "image"
       }
     },
-    "16": {
+    "17": {
       "class_type": "AIO_Preprocessor",
       "inputs": {
         "image": [
-          "15",
+          "16",
           0
         ],
         "preprocessor": "DWPreprocessor",
         "resolution": 512
       }
     },
-    "17": {
+    "18": {
       "class_type": "PreviewImage",
       "inputs": {
         "images": [
-          "16",
+          "17",
           0
         ]
       }
     },
-    "18": {
+    "19": {
       "class_type": "ControlNetLoader",
       "inputs": {
         "control_net_name": "controlnet-openpose-sdxl.safetensors"
       }
     },
-    "19": {
+    "20": {
       "class_type": "ControlNetApplyAdvanced",
       "inputs": {
         "positive": [
-          "12",
-          0
-        ],
-        "negative": [
           "13",
           0
         ],
+        "negative": [
+          "14",
+          0
+        ],
         "control_net": [
-          "18",
+          "19",
           0
         ],
         "image": [
-          "16",
+          "17",
           0
         ],
         "strength": 0.8,
@@ -221,7 +232,7 @@
         "end_percent": 0.75
       }
     },
-    "20": {
+    "21": {
       "class_type": "KSampler",
       "inputs": {
         "model": [
@@ -229,15 +240,15 @@
           0
         ],
         "positive": [
-          "19",
+          "20",
           0
         ],
         "negative": [
-          "19",
+          "20",
           1
         ],
         "latent_image": [
-          "14",
+          "15",
           0
         ],
         "seed": 20260620,
@@ -248,11 +259,11 @@
         "denoise": 1
       }
     },
-    "21": {
+    "22": {
       "class_type": "VAEDecode",
       "inputs": {
         "samples": [
-          "20",
+          "21",
           0
         ],
         "vae": [
@@ -261,20 +272,20 @@
         ]
       }
     },
-    "22": {
+    "23": {
       "class_type": "PreviewImage",
       "inputs": {
         "images": [
-          "21",
+          "22",
           0
         ]
       }
     },
-    "23": {
+    "24": {
       "class_type": "SaveImage",
       "inputs": {
         "images": [
-          "21",
+          "22",
           0
         ],
         "filename_prefix": "output"
