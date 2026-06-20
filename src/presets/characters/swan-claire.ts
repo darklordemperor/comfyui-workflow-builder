@@ -1,0 +1,27 @@
+import type { CharacterPreset } from "../../types/lora.types.ts";
+
+export const swanClairePreset: CharacterPreset = {
+  id: "swan-claire",
+  characterLora: {
+    fileName: "swan-claire-character.safetensors",
+    strengthModel: 0.8,
+    strengthClip: 0.8,
+    trigger: ["swan_claire"],
+  },
+  costumes: {
+    evening: {
+      id: "evening",
+      costumeLora: {
+        fileName: "swan-claire-evening-costume.safetensors",
+        strengthModel: 0.65,
+        strengthClip: 0.65,
+        trigger: ["claire_evening_costume"],
+      },
+      costume: ["elegant black evening dress", "silver jewelry", "formal shoes"],
+    },
+  },
+  female: {
+    identity: ["Swan Claire", "adult woman"],
+    appearance: ["long silver hair", "red eyes", "refined features"],
+  },
+};

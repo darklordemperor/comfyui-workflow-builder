@@ -1,0 +1,1 @@
+{"version":1,"records":{"polished-anime":{"id":"polished-anime","styleLora":{"fileName":"polished-anime-style.safetensors","strengthModel":0.55,"strengthClip":0.55,"trigger":["polished_anime_style"]},"style":["anime illustration","precise linework","balanced color palette"]}}}
