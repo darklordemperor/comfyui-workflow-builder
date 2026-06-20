@@ -1,0 +1,264 @@
+{
+  "prompt": {
+    "1": {
+      "class_type": "CheckpointLoaderSimple",
+      "inputs": {
+        "ckpt_name": "wai-illustrious-xl-v17.safetensors"
+      }
+    },
+    "2": {
+      "class_type": "LoraLoader",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "clip": [
+          "1",
+          1
+        ],
+        "lora_name": "swan-claire-character.safetensors",
+        "strength_model": 0.8,
+        "strength_clip": 0.8
+      }
+    },
+    "3": {
+      "class_type": "LoraLoader",
+      "inputs": {
+        "model": [
+          "2",
+          0
+        ],
+        "clip": [
+          "2",
+          1
+        ],
+        "lora_name": "swan-claire-evening-costume.safetensors",
+        "strength_model": 0.65,
+        "strength_clip": 0.65
+      }
+    },
+    "4": {
+      "class_type": "LoraLoader",
+      "inputs": {
+        "model": [
+          "3",
+          0
+        ],
+        "clip": [
+          "3",
+          1
+        ],
+        "lora_name": "polished-anime-style.safetensors",
+        "strength_model": 0.55,
+        "strength_clip": 0.55
+      }
+    },
+    "5": {
+      "class_type": "LoraLoader",
+      "inputs": {
+        "model": [
+          "4",
+          0
+        ],
+        "clip": [
+          "4",
+          1
+        ],
+        "lora_name": "formal-couple-pose.safetensors",
+        "strength_model": 0.8,
+        "strength_clip": 0.8
+      }
+    },
+    "6": {
+      "class_type": "StringConstantMultiline",
+      "inputs": {
+        "string": "masterpiece, best quality, very aesthetic, absurdres, polished_anime_style, anime illustration, precise linework, balanced color palette, distinct facial identities",
+        "strip_newlines": true
+      }
+    },
+    "7": {
+      "class_type": "StringConstantMultiline",
+      "inputs": {
+        "string": "1woman, 1man, 2people, swan_claire, claire_evening_costume, Swan Claire, adult woman, long silver hair, red eyes, refined features, elegant black evening dress, silver jewelry, formal shoes",
+        "strip_newlines": true
+      }
+    },
+    "8": {
+      "class_type": "StringConstantMultiline",
+      "inputs": {
+        "string": "bald man, generic male appearance, plain black formal clothing, left of woman",
+        "strip_newlines": true
+      }
+    },
+    "9": {
+      "class_type": "StringConstantMultiline",
+      "inputs": {
+        "string": "formal_couple_pose, woman holding male-1 hand, male-1 gently facing woman, adult couple standing together, woman on left, male-1 on right, clear separation between bodies, medium full shot, eye-level camera",
+        "strip_newlines": true
+      }
+    },
+    "10": {
+      "class_type": "StringConstantMultiline",
+      "inputs": {
+        "string": "grand hotel lobby, soft evening lighting",
+        "strip_newlines": true
+      }
+    },
+    "11": {
+      "class_type": "JoinStringMulti",
+      "inputs": {
+        "inputcount": 5,
+        "string_1": [
+          "6",
+          0
+        ],
+        "delimiter": ", ",
+        "return_list": false,
+        "string_2": [
+          "7",
+          0
+        ],
+        "string_3": [
+          "8",
+          0
+        ],
+        "string_4": [
+          "9",
+          0
+        ],
+        "string_5": [
+          "10",
+          0
+        ]
+      }
+    },
+    "12": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": [
+          "11",
+          0
+        ],
+        "clip": [
+          "5",
+          1
+        ]
+      }
+    },
+    "13": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "worst quality, low quality, low resolution, blurry, bad anatomy, bad hands, extra arms, extra legs, extra fingers, fused fingers, missing fingers, disconnected limbs, merged bodies, extra person, duplicate person, incorrect number of people, male character with silver hair, male character with red eyes, male character wearing the woman's costume, female character bald, swapped faces, swapped clothing, identical characters, twins, detailed male face, female body on male character, feminine male body, hands not touching, incorrect hand contact, wrong arm ownership, crossed limbs, merged hands, incorrect hand placement, characters facing away from each other",
+        "clip": [
+          "5",
+          1
+        ]
+      }
+    },
+    "14": {
+      "class_type": "EmptyLatentImage",
+      "inputs": {
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      }
+    },
+    "15": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "openpose_T-pose.png",
+        "upload": "image"
+      }
+    },
+    "16": {
+      "class_type": "ControlNetLoader",
+      "inputs": {
+        "control_net_name": "controlnet-openpose-sdxl.safetensors"
+      }
+    },
+    "17": {
+      "class_type": "ControlNetApplyAdvanced",
+      "inputs": {
+        "positive": [
+          "12",
+          0
+        ],
+        "negative": [
+          "13",
+          0
+        ],
+        "control_net": [
+          "16",
+          0
+        ],
+        "image": [
+          "15",
+          0
+        ],
+        "strength": 0.8,
+        "start_percent": 0,
+        "end_percent": 0.75
+      }
+    },
+    "18": {
+      "class_type": "KSampler",
+      "inputs": {
+        "model": [
+          "5",
+          0
+        ],
+        "positive": [
+          "17",
+          0
+        ],
+        "negative": [
+          "17",
+          1
+        ],
+        "latent_image": [
+          "14",
+          0
+        ],
+        "seed": 20260620,
+        "steps": 28,
+        "cfg": 6,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 1
+      }
+    },
+    "19": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "18",
+          0
+        ],
+        "vae": [
+          "1",
+          2
+        ]
+      }
+    },
+    "20": {
+      "class_type": "PreviewImage",
+      "inputs": {
+        "images": [
+          "19",
+          0
+        ]
+      }
+    },
+    "21": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "19",
+          0
+        ],
+        "filename_prefix": "output"
+      }
+    }
+  }
+}
