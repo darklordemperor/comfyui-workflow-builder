@@ -172,12 +172,32 @@
       }
     },
     "16": {
+      "class_type": "AIO_Preprocessor",
+      "inputs": {
+        "image": [
+          "15",
+          0
+        ],
+        "preprocessor": "DWPreprocessor",
+        "resolution": 512
+      }
+    },
+    "17": {
+      "class_type": "PreviewImage",
+      "inputs": {
+        "images": [
+          "16",
+          0
+        ]
+      }
+    },
+    "18": {
       "class_type": "ControlNetLoader",
       "inputs": {
         "control_net_name": "controlnet-openpose-sdxl.safetensors"
       }
     },
-    "17": {
+    "19": {
       "class_type": "ControlNetApplyAdvanced",
       "inputs": {
         "positive": [
@@ -189,11 +209,11 @@
           0
         ],
         "control_net": [
-          "16",
+          "18",
           0
         ],
         "image": [
-          "15",
+          "16",
           0
         ],
         "strength": 0.8,
@@ -201,7 +221,7 @@
         "end_percent": 0.75
       }
     },
-    "18": {
+    "20": {
       "class_type": "KSampler",
       "inputs": {
         "model": [
@@ -209,11 +229,11 @@
           0
         ],
         "positive": [
-          "17",
+          "19",
           0
         ],
         "negative": [
-          "17",
+          "19",
           1
         ],
         "latent_image": [
@@ -228,11 +248,11 @@
         "denoise": 1
       }
     },
-    "19": {
+    "21": {
       "class_type": "VAEDecode",
       "inputs": {
         "samples": [
-          "18",
+          "20",
           0
         ],
         "vae": [
@@ -241,20 +261,20 @@
         ]
       }
     },
-    "20": {
+    "22": {
       "class_type": "PreviewImage",
       "inputs": {
         "images": [
-          "19",
+          "21",
           0
         ]
       }
     },
-    "21": {
+    "23": {
       "class_type": "SaveImage",
       "inputs": {
         "images": [
-          "19",
+          "21",
           0
         ],
         "filename_prefix": "output"
