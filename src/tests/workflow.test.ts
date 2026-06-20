@@ -117,32 +117,48 @@ describe("ComfyUI workflow", () => {
   it("adds OpenPose and ControlNet nodes when enabled", () => {
     const built = build(withOpenPose());
     expect(nodesByType(built, "LoadImage")).toHaveLength(1);
-    expect(nodesByType(built, "DWPreprocessor")).toHaveLength(1);
+    expect(nodesByType(built, "AIO_Preprocessor")).toHaveLength(1);
     expect(nodesByType(built, "ControlNetLoader")).toHaveLength(1);
     expect(nodesByType(built, "ControlNetApplyAdvanced")).toHaveLength(1);
   });
 
+  it("fans the exact AIO control image into preview and ControlNet", () => {
+    const built = build(withOpenPose("full", true, "dwpose", 768));
+    const preprocessor = built.workflow.prompt[built.nodeMap.pose_preprocessor!];
+    const preview = built.workflow.prompt[built.nodeMap.preprocessor_preview!];
+    const apply = built.workflow.prompt[built.nodeMap.controlnet_apply!];
+    expect(preprocessor?.class_type).toBe("AIO_Preprocessor");
+    expect(preprocessor?.inputs.image).toEqual([built.nodeMap.pose_reference_image, 0]);
+    expect(preprocessor?.inputs.preprocessor).toBe("DWPreprocessor");
+    expect(preprocessor?.inputs.resolution).toBe(768);
+    expect(preview?.inputs.images).toEqual([built.nodeMap.pose_preprocessor, 0]);
+    expect(apply?.inputs.image).toEqual([built.nodeMap.pose_preprocessor, 0]);
+  });
+
   it("bypasses preprocessing and uses the loaded image", () => {
     const built = build(withOpenPose("bypass"));
-    expect(nodesByType(built, "DWPreprocessor")).toHaveLength(0);
+    expect(nodesByType(built, "AIO_Preprocessor")).toHaveLength(0);
     const apply = nodesByType(built, "ControlNetApplyAdvanced")[0]?.[1];
     expect(apply?.inputs.image).toEqual([built.nodeMap.pose_reference_image, 0]);
+    expect(built.workflow.prompt[built.nodeMap.preprocessor_preview!]?.inputs.images).toEqual([built.nodeMap.pose_reference_image, 0]);
   });
 
-  it.each([
-    ["full", ["enable", "enable", "enable"]],
-    ["body_only", ["enable", "disable", "disable"]],
-    ["face_only", ["disable", "enable", "disable"]],
-  ])("maps %s preprocessor flags", (mode, expected) => {
-    const node = nodesByType(build(withOpenPose(mode)), "DWPreprocessor")[0]?.[1];
-    expect([node?.inputs.detect_body, node?.inputs.detect_face, node?.inputs.detect_hand]).toEqual(expected);
+  it("maps the configured OpenPose processor into AIO", () => {
+    const node = nodesByType(build(withOpenPose("full", true, "openpose")), "AIO_Preprocessor")[0]?.[1];
+    expect(node?.inputs.preprocessor).toBe("OpenposePreprocessor");
   });
 
-  it("adds only the optional preprocessor preview when requested", () => {
+  it("always previews the exact image sent to ControlNet", () => {
     const without = build(withOpenPose("full", false));
     const withPreview = build(withOpenPose("full", true));
-    expect(without.nodeMap.preprocessor_preview).toBeUndefined();
+    expect(without.workflow.prompt[without.nodeMap.preprocessor_preview!]?.inputs.images).toEqual([without.nodeMap.pose_preprocessor, 0]);
     expect(withPreview.workflow.prompt[withPreview.nodeMap.preprocessor_preview!]?.inputs.images).toEqual([withPreview.nodeMap.pose_preprocessor, 0]);
+  });
+
+  it("titles control and final image previews distinctly", () => {
+    const canvas = buildComfyUICanvasWorkflow(build(withOpenPose()));
+    expect(canvas.nodes.find((node) => node.id === Number(build(withOpenPose()).nodeMap.preprocessor_preview))?.title).toBe("ControlNet Input Preview");
+    expect(canvas.nodes.find((node) => node.type === "PreviewImage" && node.title === "Final Generated Preview")?.title).toBe("Final Generated Preview");
   });
 
   it("always previews and saves the decoded output", () => {

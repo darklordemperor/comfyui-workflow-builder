@@ -21,7 +21,16 @@ test("rejects workflow generation when required KJNodes classes are missing", as
   globalThis.fetch = (async () => response({ CheckpointLoaderSimple: {} })) as typeof fetch;
   try {
     const service = createWorkflowService(createStore(join(process.cwd(), "data")));
-    await assert.rejects(service.generate(exampleGenerationRequest), /ComfyUI-KJNodes is required: enable StringConstantMultiline and JoinStringMulti/);
+    await assert.rejects(service.generate(exampleGenerationRequest), /StringConstantMultiline and JoinStringMulti from ComfyUI-KJNodes/);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test("rejects workflow generation when AIO preprocessor is missing", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async () => response({ StringConstantMultiline: {}, JoinStringMulti: {} })) as typeof fetch;
+  try {
+    const service = createWorkflowService(createStore(join(process.cwd(), "data")));
+    await assert.rejects(service.generate(exampleGenerationRequest), /AIO_Preprocessor.*comfyui_controlnet_aux/);
   } finally { globalThis.fetch = originalFetch; }
 });
 

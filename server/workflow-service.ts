@@ -14,11 +14,11 @@ export function createWorkflowService(store: ReturnType<typeof import("./store.t
     const { settings, registry } = await context();
     let hasKjNodes = false;
     try {
-      hasKjNodes = await createComfyClient(settings.comfyUrl).hasNodeTypes(["StringConstantMultiline", "JoinStringMulti"]);
+      hasKjNodes = await createComfyClient(settings.comfyUrl).hasNodeTypes(["StringConstantMultiline", "JoinStringMulti", "AIO_Preprocessor"]);
     } catch {
       throw new Error("Connect ComfyUI to verify the required KJNodes prompt nodes.");
     }
-    if (!hasKjNodes) throw new Error("ComfyUI-KJNodes is required: enable StringConstantMultiline and JoinStringMulti.");
+    if (!hasKjNodes) throw new Error("Required nodes are missing: enable StringConstantMultiline and JoinStringMulti from ComfyUI-KJNodes, plus AIO_Preprocessor from comfyui_controlnet_aux.");
     const resolved = resolveRequest(request, registry);
     const built = buildComfyWorkflow({ builtPrompts: buildPrompts(resolved), waiSections: resolved.waiSections, loraStack: resolved.loraStack, posePreset: resolved.resolvedPosePreset, request, defaults: { checkpointName: settings.checkpointName, ...settings.generationDefaults, denoise: 1, batchSize: 1, filenamePrefix: settings.filenamePrefix } });
     return { preview: previewPromptSections(request, registry), api: built.workflow, canvas: buildComfyUICanvasWorkflow(built) };

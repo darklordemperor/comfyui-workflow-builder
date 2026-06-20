@@ -1,7 +1,7 @@
 import { DEFAULT_WORKFLOW_DEFAULTS } from "../config/defaults.ts";
 import type { WorkflowDefaults } from "../types/config.types.ts";
 import type { LoraConfig } from "../types/lora.types.ts";
-import type { OpenPosePreprocessorMode, PosePreset } from "../types/pose.types.ts";
+import type { PosePreset } from "../types/pose.types.ts";
 import type { BuiltPrompts, WaiPromptSections } from "../types/prompt.types.ts";
 import { joinPromptSections } from "../utils/prompt-join.ts";
 import type { GenerationRequest } from "../types/request.types.ts";
@@ -30,15 +30,6 @@ class NodeBuilder {
     return { workflow: { prompt: this.nodes }, nodeMap: this.nodeMap };
   }
 }
-
-const DETECT_FLAGS: Record<Exclude<OpenPosePreprocessorMode, "bypass">, [string, string, string]> = {
-  full: ["enable", "enable", "enable"],
-  body_only: ["enable", "disable", "disable"],
-  face_only: ["disable", "enable", "disable"],
-  hand_only: ["disable", "disable", "enable"],
-  body_face: ["enable", "enable", "disable"],
-  body_hand: ["enable", "disable", "enable"],
-};
 
 export function buildComfyWorkflow({
   builtPrompts,
@@ -106,16 +97,14 @@ export function buildComfyWorkflow({
     nodes.add("pose_reference_image", "LoadImage", { image: openPose.referenceImagePath, upload: "image" });
     let controlImageRef = nodes.ref("pose_reference_image", 0);
     if (openPose.preprocessorMode !== "bypass") {
-      const [detectBody, detectFace, detectHand] = DETECT_FLAGS[openPose.preprocessorMode];
-      nodes.add("pose_preprocessor", openPose.preprocessor === "dwpose" ? "DWPreprocessor" : "OpenposePreprocessor", {
+      nodes.add("pose_preprocessor", "AIO_Preprocessor", {
         image: controlImageRef,
-        detect_body: detectBody,
-        detect_face: detectFace,
-        detect_hand: detectHand,
+        preprocessor: openPose.preprocessor === "dwpose" ? "DWPreprocessor" : "OpenposePreprocessor",
+        resolution: openPose.resolution ?? 512,
       });
       controlImageRef = nodes.ref("pose_preprocessor", 0);
-      if (openPose.showPreprocessorPreview) nodes.add("preprocessor_preview", "PreviewImage", { images: controlImageRef });
     }
+    nodes.add("preprocessor_preview", "PreviewImage", { images: controlImageRef });
     nodes.add("controlnet_loader", "ControlNetLoader", { control_net_name: openPose.controlNetModel });
     nodes.add("controlnet_apply", "ControlNetApplyAdvanced", {
       positive: positiveRef,

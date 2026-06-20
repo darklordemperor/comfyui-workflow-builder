@@ -78,26 +78,14 @@ const NODE_SCHEMAS: Record<string, NodeSchema> = {
     outputs: [{ name: "IMAGE", type: "IMAGE" }, { name: "MASK", type: "MASK" }],
     size: [315, 314],
   },
-  DWPreprocessor: {
+  AIO_Preprocessor: {
     inputs: [
       { name: "image", type: "IMAGE" },
-      { name: "detect_body", type: "COMBO", widget: true },
-      { name: "detect_face", type: "COMBO", widget: true },
-      { name: "detect_hand", type: "COMBO", widget: true },
+      { name: "preprocessor", type: "COMBO", widget: true },
+      { name: "resolution", type: "INT", widget: true },
     ],
     outputs: [{ name: "IMAGE", type: "IMAGE" }],
-    size: [315, 170],
-    packageId: "comfyui_controlnet_aux",
-  },
-  OpenposePreprocessor: {
-    inputs: [
-      { name: "image", type: "IMAGE" },
-      { name: "detect_body", type: "COMBO", widget: true },
-      { name: "detect_face", type: "COMBO", widget: true },
-      { name: "detect_hand", type: "COMBO", widget: true },
-    ],
-    outputs: [{ name: "IMAGE", type: "IMAGE" }],
-    size: [315, 170],
+    size: [315, 110],
     packageId: "comfyui_controlnet_aux",
   },
   PreviewImage: {
@@ -162,8 +150,7 @@ function widgetValues(node: ComfyNode): Array<string | number | boolean> {
     case "JoinStringMulti": return [input.inputcount as number, input.delimiter as string, input.return_list as boolean];
     case "EmptyLatentImage": return [input.width as number, input.height as number, input.batch_size as number];
     case "LoadImage": return [input.image as string, input.upload as string];
-    case "DWPreprocessor":
-    case "OpenposePreprocessor": return [input.detect_body as string, input.detect_face as string, input.detect_hand as string];
+    case "AIO_Preprocessor": return [input.preprocessor as string, input.resolution as number];
     case "ControlNetLoader": return [input.control_net_name as string];
     case "ControlNetApplyAdvanced": return [input.strength as number, input.start_percent as number, input.end_percent as number];
     case "KSampler": return [
@@ -225,6 +212,7 @@ export function buildComfyUICanvasWorkflow(built: BuiltWorkflow): ComfyUICanvasW
     const titles: Record<string, string> = {
       prompt_master: "1 · Master / Quality", prompt_female: "2 · Female Character", prompt_male: "3 · Male Character",
       prompt_interaction_pose: "4 · Interaction / Pose", prompt_background: "5 · Background / Environment", prompt_join: "Join WAI Prompt",
+      preprocessor_preview: "ControlNet Input Preview", output_preview: "Final Generated Preview",
     };
     return {
       id: Number(id),
